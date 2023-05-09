@@ -9,8 +9,41 @@ const DUMMY_MEETUP = {
   description: "This is a first meetup.",
 };
 
-function MeetupDetails() {
-  return <MeetupDetail meetup={DUMMY_MEETUP} />;
+function MeetupDetails(props) {
+  return <MeetupDetail meetup={props.meetupData} />;
+}
+
+export async function getStaticPaths() {
+  return {
+    fallback: false,
+    paths: [
+      {
+        params: {
+          meetupId: "m1",
+        },
+      },
+      {
+        params: {
+          meetupId: "m2",
+        },
+      },
+    ],
+  };
+}
+
+/*
+ ** it runs in build time
+ */
+export async function getStaticProps(context) {
+  // fetch data for a single meetup
+
+  const meetupId = context.params.meetupId;
+
+  return {
+    props: {
+      meetupData: { ...DUMMY_MEETUP, id: meetupId },
+    },
+  };
 }
 
 export default MeetupDetails;
