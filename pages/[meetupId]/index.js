@@ -1,33 +1,19 @@
 import { MeetupDetail } from "../../components/meetups/MeetupDetail";
 
-const DUMMY_MEETUP = {
-  id: "m1",
-  title: "A First Meetup",
-  image:
-    "https://blog.minhasinscricoes.com.br/wp-content/uploads/2022/05/blog-minhas-inscricoes-meetup.png",
-  address: "Some address 5, 12345",
-  description: "This is a first meetup.",
-};
-
 function MeetupDetails(props) {
   return <MeetupDetail meetup={props.meetupData} />;
 }
 
 export async function getStaticPaths() {
+  // fetch data from API
+  const response = await fetch("http://localhost:3000/api/meetups/ids");
+  const data = await response.json();
+
   return {
     fallback: false,
-    paths: [
-      {
-        params: {
-          meetupId: "m1",
-        },
-      },
-      {
-        params: {
-          meetupId: "m2",
-        },
-      },
-    ],
+    paths: data.items.map((item) => ({
+      params: { meetupId: item._id.toString() },
+    })),
   };
 }
 
@@ -36,12 +22,13 @@ export async function getStaticPaths() {
  */
 export async function getStaticProps(context) {
   // fetch data for a single meetup
-
   const meetupId = context.params.meetupId;
+  const response = await fetch(`http://localhost:3000/api/meetup/${meetupId}`);
+  const data = await response.json();
 
   return {
     props: {
-      meetupData: { ...DUMMY_MEETUP, id: meetupId },
+      meetupData: { ...data.item, id: data.item._id.toString() },
     },
   };
 }
